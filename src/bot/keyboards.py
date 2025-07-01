@@ -1,8 +1,21 @@
 from telebot import types
 
-def create_start_keyboard():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn1 = types.KeyboardButton("🎲 Бросок кубика")
-    btn2 = types.KeyboardButton("🧙 Создать персонажа")
-    markup.add(btn1, btn2)
-    return markup
+class CharacterKeyboards:
+    @staticmethod
+    def main_menu():
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        markup.add(
+            types.KeyboardButton("🎲 Бросок кубика"),
+            types.KeyboardButton("🧙 Создать персонажа")
+        )
+        return markup
+
+    @staticmethod
+    def character_actions():
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        markup.add(
+            types.KeyboardButton("📊 Характеристики"),
+            types.KeyboardButton("🎒 Инвентарь"),
+            types.KeyboardButton("➕ Добавить предмет")
+        )
+        return markup
