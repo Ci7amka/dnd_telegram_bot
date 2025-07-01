@@ -5,19 +5,17 @@ class DiceRoller:
     @staticmethod
     def roll(notation: str) -> Dict[str, any]:
         try:
-            # Парсинг нотации (например, 2d6+3)
-            if '+' in notation:
-                dice, modifier = notation.split('+')
-                modifier = int(modifier)
-            elif '-' in notation:
-                dice, modifier = notation.split('-')
-                modifier = -int(modifier)
-            else:
-                dice, modifier = notation, 0
-
-            count, sides = map(int, dice.split('d'))
+            parts = notation.lower().split('d')
+            count = int(parts[0]) if parts[0] else 1
             
-            # Бросок кубиков
+            if '+' in parts[1]:
+                sides, modifier = map(int, parts[1].split('+'))
+            elif '-' in parts[1]:
+                sides, modifier = map(int, parts[1].split('-'))
+                modifier = -modifier
+            else:
+                sides, modifier = int(parts[1]), 0
+            
             rolls = [random.randint(1, sides) for _ in range(count)]
             total = sum(rolls) + modifier
 
@@ -32,7 +30,6 @@ class DiceRoller:
 
     @staticmethod
     def roll_ability_scores() -> List[int]:
-        """Генерация характеристик по классическим правилам D&D"""
         scores = []
         for _ in range(6):
             rolls = sorted([random.randint(1, 6) for _ in range(4)])

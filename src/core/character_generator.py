@@ -28,14 +28,3 @@ class CharacterGenerator:
         first_names = ['Арагорн', 'Леголас', 'Гимли', 'Фродо', 'Сэм']
         last_names = ['Странник', 'Лучник', 'Топорщик', 'Хранитель', 'Садовод']
         return f"{random.choice(first_names)} {random.choice(last_names)}"
- @classmethod  
-    def generate_name(cls):  
-        first_names = [  
-            'Арагорн', 'Леголас', 'Гимли',   
-            'Фродо', 'Сэм', 'Гэндальф'  
-        ]  
-        last_names = [  
-            'Странник', 'Лучник', 'Топорщик',   
-            'Хранитель', 'Садовод', 'Мудрый'  
-        ]  
-        return f"{random.choice(first_names)} {random.choice(last_names)}"  

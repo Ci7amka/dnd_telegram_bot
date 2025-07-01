@@ -39,35 +39,7 @@ class CharacterKeyboards:
         return markup
 
     @staticmethod
-    def modifier_selection():
-        markup = types.InlineKeyboardMarkup()
-        modifiers = [0, 1, 2, 3, 4, 5]
-        row = []
-        for mod in modifiers:
-            row.append(types.InlineKeyboardButton(f"+{mod}", callback_data=f'mod_{mod}'))
-            if len(row) == 3:
-                markup.row(*row)
-                row = []
-        if row:
-            markup.row(*row)
-        return markup
-
-    @staticmethod
-    def character_creation_steps():
-        markup = types.InlineKeyboardMarkup()
-        steps = [
-            ("🎲 Сгенерировать характеристики", "gen_stats"),
-            ("📝 Выбрать имя", "choose_name"),
-            ("🏰 Выбрать расу", "choose_race"),
-            ("⚔️ Выбрать класс", "choose_class"),
-            ("✅ Завершить создание", "finish_character")
-        ]
-        for text, callback in steps:
-            markup.add(types.InlineKeyboardButton(text, callback_data=callback))
-        return markup
-
-    @staticmethod
-    def character_actions(character=None):
+    def character_actions():
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(
             types.KeyboardButton("📊 Характеристики"),
@@ -75,6 +47,6 @@ class CharacterKeyboards:
         )
         markup.add(
             types.KeyboardButton("➕ Добавить предмет"),
-            types.KeyboardButton("🔄 Изменить персонажа")
+            types.KeyboardButton("🔙 Главное меню")
         )
         return markup

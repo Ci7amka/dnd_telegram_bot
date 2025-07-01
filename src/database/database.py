@@ -1,59 +1,35 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-import os
-from dotenv import load_dotenv
+import sqlite3
+import json
 
-load_dotenv()
+class CharacterDatabase:
+    def __init__(self, db_path='characters.db'):
+        self.conn = sqlite3.connect(db_path, check_same_thread=False)
+        self.create_table()
 
-# Базовый класс для моделей
-Base = declarative_base()
+    def create_table(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS characters (
+                user_id INTEGER PRIMARY KEY,
+                character_data TEXT
+            )
+        ''')
+        self.conn.commit()
 
-class DatabaseManager:
-    _instance = None
-    
-    def __new__(cls):
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-            cls._instance._init_db()
-        return cls._instance
-    
-    def _init_db(self):
-        # URL базы данных из .env
-        db_url = os.getenv('DATABASE_URL', 'sqlite:///data/characters.db')
-        
-        # Создание движка
-        self.engine = create_engine(db_url, echo=False)
-        
-        # Создание сессии
-        self.SessionLocal = sessionmaker(
-            bind=self.engine, 
-            autocommit=False, 
-            autoflush=False
-        )
-    
-    def get_session(self):
-        return self.SessionLocal()
-    
-    def init_models(self):
-        # Создание таблиц
-        Base.metadata.create_all(self.engine)
-    
-    def add_entity(self, entity):
-        session = self.get_session()
-        try:
-            session.add(entity)
-            session.commit()
-            return entity
-        except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
-    
-    def get_character_by_user(self, user_id):
-        session = self.get_session()
-        try:
-            return session.query(Character).filter_by(user_id=user_id).first()
-        finally:
-            session.close()
+    def save_character(self, user_id, character):
+        cursor = self.conn.cursor()
+        character_json = json.dumps(character)
+        cursor.execute('''
+            REPLACE INTO characters (user_id, character_data) 
+            VALUES (?, ?)
+        ''', (user_id, character_json))
+        self.conn.commit()
+
+    def load_character(self, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT character_data FROM characters WHERE user_id = ?', (user_id,))
+        result = cursor.fetchone()
+        return json.loads(result[0]) if result else None
+
+    def close(self):
+        self.conn.close()
