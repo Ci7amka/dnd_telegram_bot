@@ -9,9 +9,8 @@ env/
 
 # Database
 *.db
-*.sqlite3
 
-# IDE
+# IDE settings
 .vscode/
 .idea/
 
