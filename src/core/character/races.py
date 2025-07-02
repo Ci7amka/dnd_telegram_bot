@@ -1,7 +1,6 @@
-# src/core/character/races.py
-from enum import Enum, auto
-from dataclasses import dataclass
-from typing import Optional, List
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import List, Dict, Optional
 
 class RaceType(Enum):
     HUMAN = "Человек"
@@ -17,74 +16,70 @@ class RaceType(Enum):
 @dataclass
 class Race:
     """
-    Базовый класс для рас персонажей D&D
+    Расширенный класс для рас персонажей D&D
     """
     name: RaceType
-    subraces: Optional[List['SubRace']] = None
-    
-    # Базовые характеристики расы
-    ability_score_increase: dict = None
-    age: tuple = None
-    alignment: str = None
-    size: str = None
+    ability_score_increase: Dict[str, int] = field(default_factory=dict)
+    age_range: tuple = (18, 80)
+    alignment: str = "Нейтральный"
+    size: str = "Средний"
     speed: int = 30
-    
-    def __post_init__(self):
-        if self.ability_score_increase is None:
-            self.ability_score_increase = {}
-        
-        if self.subraces is None:
-            self.subraces = []
+    languages: List[str] = field(default_factory=list)
+    traits: Dict[str, str] = field(default_factory=dict)
+    subraces: List[str] = field(default_factory=list)
 
-class SubRace:
+def create_race(race_type: RaceType) -> Race:
     """
-    Подраса с дополнительными характеристиками
+    Фабрика для создания рас с полной конфигурацией
     """
-    def __init__(self, name: str, parent_race: RaceType):
-        self.name = name
-        self.parent_race = parent_race
-
-# Примеры создания рас
-def create_human_race() -> Race:
-    return Race(
-        name=RaceType.HUMAN,
-        ability_score_increase={
-            "strength": 1,
-            "dexterity": 1,
-            "constitution": 1,
-            "intelligence": 1,
-            "wisdom": 1,
-            "charisma": 1
+    race_configs = {
+        RaceType.HUMAN: {
+            'ability_score_increase': {
+                'strength': 1, 'dexterity': 1, 'constitution': 1, 
+                'intelligence': 1, 'wisdom': 1, 'charisma': 1
+            },
+            'age_range': (18, 80),
+            'languages': ['Общий'],
+            'traits': {
+                'versatility': 'Бонус ко всем характеристикам'
+            }
         },
-        age=(18, 80),
-        alignment="Любой",
-        size="Средний"
-    )
-
-def create_elf_race() -> Race:
-    return Race(
-        name=RaceType.ELF,
-        subraces=[
-            SubRace("Высший эльф", RaceType.ELF),
-            SubRace("Лесной эльф", RaceType.ELF),
-            SubRace("Темный эльф", RaceType.ELF)
-        ],
-        ability_score_increase={"dexterity": 2},
-        age=(100, 750),
-        alignment="Нейтрально-хаотичный",
-        size="Средний"
-    )
-
-# Фабрика для создания рас
-def race_factory(race_type: RaceType) -> Race:
-    race_creators = {
-        RaceType.HUMAN: create_human_race,
-        RaceType.ELF: create_elf_race,
-        # Добавьте другие расы
+        RaceType.ELF: {
+            'ability_score_increase': {'dexterity': 2},
+            'age_range': (100, 750),
+            'languages': ['Общий', 'Эльфийский'],
+            'traits': {
+                'darkvision': 'Видение в темноте',
+                'fey_ancestry': 'Преимущество против магического сна'
+            },
+            'subraces': ['Высший эльф', 'Лесной эльф', 'Темный эльф']
+        },
+        # Можно добавить другие расы
     }
     
-    creator = race_creators.get(race_type)
-    if creator:
-        return creator()
-    
-    raise ValueError(f"Раса {race_type} не поддерживается")
+    config = race_configs.get(race_type, {})
+    return Race(
+        name=race_type,
+        ability_score_increase=config.get('ability_score_increase', {}),
+        age_range=config.get('age_range', (18, 80)),
+        languages=config.get('languages', []),
+        traits=config.get('traits', {}),
+        subraces=config.get('subraces', [])
+    )
+
+# Вспомогательные функции
+def get_all_races() -> List[Race]:
+    """
+    Возвращает список всех рас
+    """
+    return [create_race(race_type) for race_type in RaceType]
+
+def get_race_by_name(name: str) -> Optional[Race]:
+    """
+    Получение расы по имени
+    """
+    try:
+        race_type = RaceType(name)
+        return create_race(race_type)
+    except ValueError:
+        return None

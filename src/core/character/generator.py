@@ -1,54 +1,40 @@
 from typing import Optional
-from .races import Race, RaceType, SubRace
-from .classes import CharacterClass, ClassType
-from .backgrounds import Background, BackgroundType
+from .races import Race, RaceType, create_race
+from .classes import CharacterClass, ClassType, create_character_class
+from .backgrounds import Background, BackgroundType, create_background
 
 class CharacterGenerator:
-    @classmethod
-    def generate_character(
-        cls, 
-        name: str, 
-        race: RaceType, 
-        subrace: Optional[SubRace] = None,
-        character_class: Optional[ClassType] = None,
-        background: Optional[BackgroundType] = None
-    ):
+    def __init__(self):
+        self.race: Optional[Race] = None
+        self.character_class: Optional[CharacterClass] = None
+        self.background: Optional[Background] = None
+    
+    def set_race(self, race_type: RaceType):
+        """Установка расы персонажа"""
+        self.race = create_race(race_type)
+    
+    def set_class(self, class_type: ClassType):
+        """Установка класса персонажа"""
+        self.character_class = create_character_class(class_type)
+    
+    def set_background(self, background_type: BackgroundType):
+        """Установка предыстории персонажа"""
+        self.background = create_background(background_type)
+    
+    def generate_character(self, 
+                           race_type: RaceType, 
+                           class_type: ClassType, 
+                           background_type: BackgroundType):
         """
-        Полностью автоматизированный генератор персонажа
-        
-        Args:
-            name (str): Имя персонажа
-            race (RaceType): Раса персонажа
-            subrace (Optional[SubRace]): Подраса
-            character_class (Optional[ClassType]): Класс персонажа
-            background (Optional[BackgroundType]): Предыстория
-        
-        Returns:
-            Character: Сгенерированный персонаж
+        Полная генерация персонажа
         """
-        # Создание компонентов персонажа
-        character_race = Race(
-            name=race, 
-            subrace=subrace
-        )
+        self.set_race(race_type)
+        self.set_class(class_type)
+        self.set_background(background_type)
         
-        character_class = CharacterClass.get_class_details(
-            character_class
-        ) if character_class else None
-        
-        character_background = Background.get_background_details(
-            background
-        ) if background else None
-        
-        # Создание персонажа с расширенной логикой
-        character = Character(
-            name=name,
-            race=character_race,
-            character_class=character_class,
-            background=character_background
-        )
-        
-        # Автоматическая генерация характеристик
-        character.generate_ability_scores()
-        
-        return character
+        # Здесь можно добавить логику генерации характеристик
+        return {
+            'race': self.race,
+            'class': self.character_class,
+            'background': self.background
+        }
