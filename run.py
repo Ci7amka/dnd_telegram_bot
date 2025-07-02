@@ -1,7 +1,9 @@
 import os
 import telebot
 from dotenv import load_dotenv
-
+import sys  
+import os  
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 # Импорт основных модулей
 from src.bot.character_creation_ui import CharacterCreationUI
 from src.core.character.races import RaceType
