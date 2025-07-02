@@ -3,12 +3,13 @@ import sys
 import logging
 from dotenv import load_dotenv
 import telebot
-
-# Локальные импорты
+import os  
+from dotenv import load_dotenv # Локальные импорты
 from src.bot.character_creation_ui import CharacterCreationUI
 from src.database.models import init_database
 from src.core.character.races import RaceType
 from src.core.character.classes import ClassType
+ 
 
 # Настройка логирования
 logging.basicConfig(
@@ -44,3 +45,10 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+load_dotenv()  # Загрузка переменных из .env  
+
+bot_token = os.getenv('TELEGRAM_BOT_TOKEN')  
+if not bot_token:  
+    raise ValueError("Токен Telegram бота не найден!") 
